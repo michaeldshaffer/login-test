@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { User } from './models/user';
+import { Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +9,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'login-test';
+  currUser: User;
+  constructor(private router: Router, private authService: AuthService){
+    this.authService.currUser.subscribe(user => this.currUser = user);
+  }
+  public logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
