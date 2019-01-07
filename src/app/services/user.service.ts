@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
 import { Observable } from 'rxjs';
+import { SelfregisterUser } from '../models/selfregister-user';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class UserService {
   public getAllUsers() {//TODO: need return type
     return this.http.get<User[]>(`${environment.apiUrl}/users`);
   }
-  public selfRegister(user: User){
+  public selfRegister(user: SelfregisterUser){
     return this.http.post(`${environment.apiUrl}/users/selfregister`,user);
   }
   public update(user: User) {

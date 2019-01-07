@@ -4,8 +4,9 @@ import { Observable, of, throwError } from 'rxjs';
 import { mergeMap, materialize, delay, dematerialize } from 'rxjs/operators';
 
 @Injectable()
-export class FakeBackendInterceptor implements HttpInterceptor {
+export class FakeBackend implements HttpInterceptor {
     public intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        
         // array in local storage for registered users
         let users: any[] = JSON.parse(localStorage.getItem('users')) || [];
 
@@ -15,6 +16,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             // authenticate
             if (request.url.endsWith('/users/authenticate') && request.method === 'POST') {
                 // find if any user matches login credentials
+                console.log("HEY")
                 let filteredUsers = users.filter(user => {
                     return user.username === request.body.username && user.password === request.body.password;
                 });
@@ -66,19 +68,19 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             }
 
             // register user
-            if (request.url.endsWith('/users/register') && request.method === 'POST') {
+            if (request.url.endsWith('/users/selfregister') && request.method === 'POST') {
                 // get new user object from post body
-                let newUser = request.body;
+                let newSelfregisterUser = request.body;
 
                 // validation
-                let duplicateUser = users.filter(user => { return user.username === newUser.username; }).length;
+                let duplicateUser = users.filter(user => { return user.username === newSelfregisterUser.username; }).length;
                 if (duplicateUser) {
-                    return throwError({ error: { message: 'Username "' + newUser.username + '" is already taken' } });
+                    return throwError({ error: { message: 'Username "' + newSelfregisterUser.username + '" is already taken' } });
                 }
 
                 // save new user
-                newUser.id = users.length + 1;
-                users.push(newUser);
+                //newSelfregisterUser.id = users.length + 1;
+                users.push(newSelfregisterUser);
                 localStorage.setItem('users', JSON.stringify(users));
 
                 // respond 200 OK
@@ -123,6 +125,6 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 }
 export let fakeBackendProvider = {
     provide: HTTP_INTERCEPTORS,
-    useClass: FakeBackendInterceptor,
+    useClass: FakeBackend,
     multi: true
 };

@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { AuthGuard } from './auth.guard';
 import { LoginComponent } from './login/login.component';
+import { SelfregisterComponent } from './selfregister/selfregister.component';
 
 const routes: Routes = [
 
@@ -14,9 +15,8 @@ const routes: Routes = [
     path: 'login', 
     component: LoginComponent
   },{ 
-    path: 'register', 
-    //component: SelfRegisterComponent ,
-    redirectTo: '' 
+    path: 'selfregister', 
+    component: SelfregisterComponent 
   },{ 
     path: '**', 
     redirectTo: '' 

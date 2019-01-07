@@ -24,6 +24,7 @@ export class AuthService {
   public login(username: string, password: string) {
     return this.http.post<any>(`${environment.apiUrl}/users/authenticate`,{username,password})
       .pipe(map(user => {
+        console.log(user)
         if(user && user.token) {
           localStorage.setItem(this.USERKEY,JSON.stringify(user));
           this.currUserSub.next(user);

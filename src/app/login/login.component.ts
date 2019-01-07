@@ -39,7 +39,6 @@ export class LoginComponent implements OnInit {
     this.submitted = true;
     if(this.loginForm.invalid) return;
     this.loading = true;
-    
     const usern = this.loginForm.controls.username.value;
     const pwd = this.loginForm.controls.password.value;
 
@@ -47,10 +46,12 @@ export class LoginComponent implements OnInit {
       .pipe(first())
       .subscribe(
         data => {
+          console.log(data)
           this.router.navigate([this.returnUrl]);
         },
         error => {
           //some sort of error alert
+          console.log("err")
           this.loading = false;
         }
       );
