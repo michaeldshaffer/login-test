@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { Subscription } from 'rxjs';
@@ -16,7 +17,7 @@ export class MainComponent implements OnInit {
   users: User[] = [];
 
   constructor(
-    private userService: UserService, private authService: AuthService
+    private userService: UserService, private authService: AuthService, private router: Router
   ) { 
     this.currentUserSub = this.authService.currUser.subscribe(user => {
       this.currentUser = user;
@@ -36,10 +37,15 @@ export class MainComponent implements OnInit {
       this.getAllUsers();
     })
   };
-
+  public logOut(){
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  };
   private getAllUsers(){
     this.userService.getAllUsers().pipe(first()).subscribe(users => {
+      console.log(users)
       this.users = users;
     })
+
   }
 }

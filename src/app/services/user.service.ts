@@ -12,12 +12,13 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  public getUserById(id: number) {//TODO: need return type
-    return this.http.get(`${environment.apiUrl}/users/${id}`);  
+  public getUserById(id: number):Observable<User> {
+    return this.http.get<User>(`${environment.apiUrl}/users/${id}`);  
   }
-  public getAllUsers() {//TODO: need return type
+  public getAllUsers() : Observable<User[]>{
     return this.http.get<User[]>(`${environment.apiUrl}/users`);
   }
+  //TODO: return types?
   public selfRegister(user: SelfregisterUser){
     return this.http.post(`${environment.apiUrl}/users/selfregister`,user);
   }

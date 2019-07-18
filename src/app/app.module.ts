@@ -7,8 +7,10 @@ import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
 import { LoginComponent } from './login/login.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { fakeBackendProvider } from './fake-backend';
 import { SelfregisterComponent } from './selfregister/selfregister.component';
+import { requestInterceptor } from './interceptors/request-interceptor'
+import { responseInterceptor } from './interceptors/response-interceptor'
+import { fakeBackendProvider } from './backend/fake-backend';
 
 @NgModule({
   declarations: [
@@ -24,8 +26,9 @@ import { SelfregisterComponent } from './selfregister/selfregister.component';
     HttpClientModule
   ],
   providers: [
-    // provider used to create fake backend
-    fakeBackendProvider
+    requestInterceptor,
+    responseInterceptor,
+    fakeBackendProvider// provider used to create fake backend, remove when in "production"
   ],
   bootstrap: [AppComponent]
 })

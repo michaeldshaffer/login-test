@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HTTP_INTERCEPTORS, HttpResponse } from '@angular/common/http';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HTTP_INTERCEPTORS, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { mergeMap, materialize, delay, dematerialize } from 'rxjs/operators';
 
@@ -16,36 +16,42 @@ export class FakeBackend implements HttpInterceptor {
             // authenticate
             if (request.url.endsWith('/users/authenticate') && request.method === 'POST') {
                 // find if any user matches login credentials
-                console.log("HEY")
                 let filteredUsers = users.filter(user => {
                     return user.username === request.body.username && user.password === request.body.password;
                 });
-
+                
                 if (filteredUsers.length) {
                     // if login details are valid return 200 OK with user details and fake jwt token
                     let user = filteredUsers[0];
+                    
                     let body = {
                         id: user.id,
                         username: user.username,
                         firstName: user.firstName,
-                        lastName: user.lastName,
-                        token: 'fake-jwt-token'
+                        lastName: user.lastName
                     };
+                    let header = new HttpHeaders().set('Authorization','Bearer fake-jwt-token');
+                    let resp = new HttpResponse({ status: 200, body: body, headers: header});
+                    console.log('FB','authenticated')
 
-                    return of(new HttpResponse({ status: 200, body: body }));
+                    return of(resp);
                 } else {
                     // else return 400 bad request
+                    console.log('FB','not authenticated')
                     return throwError({ error: { message: 'Username or password is incorrect' } });
                 }
             }
 
             // get users
             if (request.url.endsWith('/users') && request.method === 'GET') {
+                console.log(request.headers)
                 // check for fake auth token in header and return users if valid, this security is implemented server side in a real application
                 if (request.headers.get('Authorization') === 'Bearer fake-jwt-token') {
+                    console.log(users)
                     return of(new HttpResponse({ status: 200, body: users }));
                 } else {
                     // return 401 not authorised if token is null or invalid
+                    console.log("NOPE")
                     return throwError({ status: 401, error: { message: 'Unauthorised' } });
                 }
             }

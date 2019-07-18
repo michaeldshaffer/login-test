@@ -12,8 +12,10 @@ export class AuthService {
   public currUser: Observable<User>;
   private currUserSub: BehaviorSubject<User>;
   private USERKEY: string = 'currUser';
+  private USERTOKEN: string = 'currToken';
+  //this is a client class and therefore shouldn't be touching local storage, only session
   constructor(private http: HttpClient) {
-    this.currUserSub = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currUser')));
+    this.currUserSub = new BehaviorSubject<User>(JSON.parse(sessionStorage.getItem('currUser')));
     this.currUser = this.currUserSub.asObservable();
   }
 
@@ -24,16 +26,16 @@ export class AuthService {
   public login(username: string, password: string) {
     return this.http.post<any>(`${environment.apiUrl}/users/authenticate`,{username,password})
       .pipe(map(user => {
-        console.log(user)
-        if(user && user.token) {
-          localStorage.setItem(this.USERKEY,JSON.stringify(user));
+        if(user) {
+          sessionStorage.setItem(this.USERKEY,JSON.stringify(user));
           this.currUserSub.next(user);
         }
         return user;
       }));
   }
   public logout() {
-    localStorage.removeItem(this.USERKEY);
+    sessionStorage.removeItem(this.USERKEY);
+    sessionStorage.removeItem(this.USERTOKEN);
     this.currUserSub.next(null);
   }
 }

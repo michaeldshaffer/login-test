@@ -35,6 +35,10 @@ export class LoginComponent implements OnInit {
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
+
+   //used on the view for convenience
+   get f() { return this.loginForm.controls; }
+
   onSubmit(){
     this.submitted = true;
     if(this.loginForm.invalid) return;
@@ -46,7 +50,6 @@ export class LoginComponent implements OnInit {
       .pipe(first())
       .subscribe(
         data => {
-          console.log(data)
           this.router.navigate([this.returnUrl]);
         },
         error => {
