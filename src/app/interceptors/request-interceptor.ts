@@ -5,7 +5,10 @@ export class RequestInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): import("rxjs").Observable<HttpEvent<any>> {
         if(!(req.url.endsWith('selfregister') || req.url.endsWith('authenticate'))){
             //TODO: need to ensure that there is a currUser
-            req.headers.set('Authorization',sessionStorage.getItem('currToken'))
+            const authReq = req.clone({
+                setHeaders:{ Authorization: sessionStorage.getItem('currToken')}
+            });
+            return next.handle(authReq);            
         }
         return next.handle(req);
     }

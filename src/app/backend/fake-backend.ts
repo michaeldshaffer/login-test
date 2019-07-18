@@ -21,7 +21,7 @@ export class FakeBackend implements HttpInterceptor {
                 });
                 
                 if (filteredUsers.length) {
-                    // if login details are valid return 200 OK with user details and fake jwt token
+                    // if login details are valid return 200 OK with user details 
                     let user = filteredUsers[0];
                     
                     let body = {
@@ -30,9 +30,10 @@ export class FakeBackend implements HttpInterceptor {
                         firstName: user.firstName,
                         lastName: user.lastName
                     };
-                    let header = new HttpHeaders().set('Authorization','Bearer fake-jwt-token');
+                    let header = this.makeAHeader(); 
+                    console.log(header)
                     let resp = new HttpResponse({ status: 200, body: body, headers: header});
-                    console.log('FB','authenticated')
+                    console.log('FB','authenticated',resp)
 
                     return of(resp);
                 } else {
@@ -44,22 +45,20 @@ export class FakeBackend implements HttpInterceptor {
 
             // get users
             if (request.url.endsWith('/users') && request.method === 'GET') {
-                console.log(request.headers)
-                // check for fake auth token in header and return users if valid, this security is implemented server side in a real application
-                if (request.headers.get('Authorization') === 'Bearer fake-jwt-token') {
-                    console.log(users)
-                    return of(new HttpResponse({ status: 200, body: users }));
+                // check for auth token in header and return users if valid, this security is implemented server side in a real application
+                if (this.validateToken(request.headers.get('Authorization'))) {
+                    return of(new HttpResponse({ status: 200, body: users, headers:this.makeAHeader()}));
                 } else {
                     // return 401 not authorised if token is null or invalid
-                    console.log("NOPE")
+                    console.log("NOPE", request)
                     return throwError({ status: 401, error: { message: 'Unauthorised' } });
                 }
             }
 
             // get user by id
             if (request.url.match(/\/users\/\d+$/) && request.method === 'GET') {
-                // check for fake auth token in header and return user if valid, this security is implemented server side in a real application
-                if (request.headers.get('Authorization') === 'Bearer fake-jwt-token') {
+                // check for auth token in header and return user if valid, this security is implemented server side in a real application
+                if (this.validateToken(request.headers.get('Authorization'))) {
                     // find user by id in users array
                     let urlParts = request.url.split('/');
                     let id = parseInt(urlParts[urlParts.length - 1]);
@@ -85,7 +84,7 @@ export class FakeBackend implements HttpInterceptor {
                 }
 
                 // save new user
-                //newSelfregisterUser.id = users.length + 1;
+                newSelfregisterUser.id = users.length + 1;
                 users.push(newSelfregisterUser);
                 localStorage.setItem('users', JSON.stringify(users));
 
@@ -96,7 +95,7 @@ export class FakeBackend implements HttpInterceptor {
             // delete user
             if (request.url.match(/\/users\/\d+$/) && request.method === 'DELETE') {
                 // check for fake auth token in header and return user if valid, this security is implemented server side in a real application
-                if (request.headers.get('Authorization') === 'Bearer fake-jwt-token') {
+                if (this.validateToken(request.headers.get('Authorization'))) {
                     // find user by id in users array
                     let urlParts = request.url.split('/');
                     let id = parseInt(urlParts[urlParts.length - 1]);
@@ -127,7 +126,16 @@ export class FakeBackend implements HttpInterceptor {
         .pipe(materialize())
         .pipe(delay(500))
         .pipe(dematerialize());
-    }ß
+    }
+    private makeToken():string {
+        return 'fake-jwt-token';
+    }
+    private validateToken(tokenString:string):boolean {
+        return tokenString === 'Bearer fake-jwt-token';
+    }
+    private makeAHeader():HttpHeaders {
+        return new HttpHeaders().set('AuthorIzatioN','Bearer ' + this.makeToken());
+    }
 }
 export let fakeBackendProvider = {
     provide: HTTP_INTERCEPTORS,

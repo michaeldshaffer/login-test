@@ -50,7 +50,6 @@ export class SelfregisterComponent implements OnInit {
     .subscribe(
       data => {
        // this.alertService.success('Registration successful', true);
-       console.log('SUCCESS')
         this.router.navigate(['/login']);
       },
       error => {

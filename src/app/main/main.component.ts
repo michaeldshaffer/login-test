@@ -43,7 +43,6 @@ export class MainComponent implements OnInit {
   };
   private getAllUsers(){
     this.userService.getAllUsers().pipe(first()).subscribe(users => {
-      console.log(users)
       this.users = users;
     })
 
