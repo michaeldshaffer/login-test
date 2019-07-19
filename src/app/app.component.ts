@@ -9,9 +9,9 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currUser: User;
+  currentUser: User;
   constructor(private router: Router, private authService: AuthService){
-    this.authService.currUser.subscribe(user => this.currUser = user);
+    this.authService.currUser.subscribe(user => this.currentUser = user);
   }
   public logout() {
     this.authService.logout();

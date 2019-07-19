@@ -17,6 +17,7 @@ export class ResponseInterceptor implements HttpInterceptor {
         );
   }
   getAuthHeader(hdrs:any): string {
+    console.log(hdrs.get('authorization'))
     return hdrs.get('authorization')
   }
 }
