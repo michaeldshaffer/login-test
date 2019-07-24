@@ -49,27 +49,7 @@ export class FakeBackend implements HttpInterceptor {
 
             // delete user
             if (request.url.match(/\/users\/\d+$/) && request.method === 'DELETE') {
-                // check for fake auth token in header and return user if valid, this security is implemented server side in a real application
-                if (this.validateToken(request.headers.get('authorization'))) {
-                    // find user by id in users array
-                    let urlParts = request.url.split('/');
-                    let id = parseInt(urlParts[urlParts.length - 1]);
-                    for (let i = 0; i < users.length; i++) {
-                        let user = users[i];
-                        if (user.id === id) {
-                            // delete user
-                            users.splice(i, 1);
-                            localStorage.setItem('users', JSON.stringify(users));
-                            break;
-                        }
-                    }
-
-                    // respond 200 OK
-                    return of(new HttpResponse({ status: 200 }));
-                } else {
-                    // return 401 not authorised if token is null or invalid
-                    return throwError({ status: 401, error: { message: 'Unauthorised' } });
-                }
+                return this.doDeleteUser(request,users);
             }
 
             // pass through any requests not handled above
@@ -143,9 +123,9 @@ export class FakeBackend implements HttpInterceptor {
     private makeAUser(sru: any, id: number): BackEndUser {
         return new BackEndUser(id, sru.username, sru.firstName, sru.lastName, sru.email, sru.password);
     }
-    private doDeleteUser(request: HttpRequest<any>, users: any[], userid: number): Observable<HttpEvent<any>> {
-            // check for fake auth token in header and return user if valid, this security is implemented server side in a real application
-            if (this.validateToken(request.headers.get('authorization'))) {
+    private doDeleteUser(request: HttpRequest<any>, users: any[]): Observable<HttpEvent<any>> {
+        // check for fake auth token in header and return user if valid, this security is implemented server side in a real application
+        if (this.validateToken(request.headers.get('authorization'))) {
             // find user by id in users array
             let urlParts = request.url.split('/');
             let id = parseInt(urlParts[urlParts.length - 1]);
