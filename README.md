@@ -17,3 +17,5 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
     * include Authorization header in every secure request
 3. better (okay, more than zero) style
 4. validate that you can't delete yourself
+
+TESTING FOR RELEASE
